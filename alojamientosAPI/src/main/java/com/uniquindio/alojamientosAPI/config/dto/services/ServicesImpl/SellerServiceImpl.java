@@ -4,11 +4,12 @@ package com.uniquindio.alojamientosAPI.config.dto.services.ServicesImpl;
 
 import com.uniquindio.alojamientosAPI.config.dto.SellerDTO;
 import com.uniquindio.alojamientosAPI.config.dto.services.SellerService;
-
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Service
 public class SellerServiceImpl implements SellerService {
 
     private final Map<Long, SellerDTO> sellerDB = new HashMap<>();
@@ -24,3 +25,4 @@ public class SellerServiceImpl implements SellerService {
         return sellerDB.get(id);
     }
 }
+
