@@ -7,6 +7,7 @@ import com.uniquindio.alojamientosAPI.config.dto.services.SellerService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -23,6 +24,30 @@ public class SellerServiceImpl implements SellerService {
     @Override
     public SellerDTO getSellerById(Long id) {
         return sellerDB.get(id);
+    }
+
+    @Override
+    public SellerDTO createSeller(SellerDTO sellerDTO) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createSeller'");
+    }
+
+    @Override
+    public List<SellerDTO> getAllSellers() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAllSellers'");
+    }
+
+    @Override
+    public SellerDTO updateSeller(Long id, SellerDTO sellerDTO) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateSeller'");
+    }
+
+    @Override
+    public void deleteSeller(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteSeller'");
     }
 }
 

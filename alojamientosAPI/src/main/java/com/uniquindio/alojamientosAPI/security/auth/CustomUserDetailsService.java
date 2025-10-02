@@ -1,6 +1,6 @@
 package com.uniquindio.alojamientosAPI.security.auth;
 
-import com.uniquindio.alojamientosAPI.domain.user.UserEntity;
+import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
 import com.uniquindio.alojamientosAPI.persistence.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,6 +1,6 @@
 package com.uniquindio.alojamientosAPI.persistence.repository;
 
-import com.uniquindio.alojamientosAPI.domain.user.UserEntity;
+import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
