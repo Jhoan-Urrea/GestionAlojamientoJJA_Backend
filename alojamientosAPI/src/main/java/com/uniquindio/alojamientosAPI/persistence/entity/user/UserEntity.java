@@ -1,4 +1,4 @@
-package com.uniquindio.alojamientosAPI.domain.user;
+package com.uniquindio.alojamientosAPI.persistence.entity.user;
 
 import jakarta.persistence.*;
 import java.util.Set;

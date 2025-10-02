@@ -1,4 +1,4 @@
-package com.uniquindio.alojamientosAPI.persistence.DAO;
+package com.uniquindio.alojamientosAPI.persistence.dao;
 
 import com.uniquindio.alojamientosAPI.persistence.entity.Product;
 

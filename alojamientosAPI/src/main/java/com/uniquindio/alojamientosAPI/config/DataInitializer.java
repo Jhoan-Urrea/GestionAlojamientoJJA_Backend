@@ -1,8 +1,8 @@
 package com.uniquindio.alojamientosAPI.config;
 
-import com.uniquindio.alojamientosAPI.domain.user.RoleEntity;
-import com.uniquindio.alojamientosAPI.domain.user.RoleEnum;
-import com.uniquindio.alojamientosAPI.domain.user.UserEntity;
+import com.uniquindio.alojamientosAPI.persistence.entity.user.RoleEntity;
+import com.uniquindio.alojamientosAPI.persistence.entity.user.RoleEnum;
+import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
 import com.uniquindio.alojamientosAPI.persistence.repository.RoleRepository;
 import com.uniquindio.alojamientosAPI.persistence.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
