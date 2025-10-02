@@ -1,4 +1,4 @@
-package com.uniquindio.alojamientosAPI.domain.user;
+package com.uniquindio.alojamientosAPI.persistence.entity.user;
 
 
 public enum RoleEnum {

@@ -2,7 +2,7 @@ package com.uniquindio.alojamientosAPI.web.user;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.uniquindio.alojamientosAPI.domain.user.UserEntity;
+import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
 import com.uniquindio.alojamientosAPI.persistence.repository.UserRepository;
 
 import java.util.List;

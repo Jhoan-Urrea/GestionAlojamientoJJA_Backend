@@ -4,7 +4,7 @@ import com.uniquindio.alojamientosAPI.config.dto.ProductDTO;
 import com.uniquindio.alojamientosAPI.config.dto.SellerDTO;
 import com.uniquindio.alojamientosAPI.config.dto.services.ProductService;
 import com.uniquindio.alojamientosAPI.config.dto.services.SellerService;
-import com.uniquindio.alojamientosAPI.persistence.DAO.ProductDAO;
+import com.uniquindio.alojamientosAPI.persistence.dao.ProductDAO;
 import com.uniquindio.alojamientosAPI.persistence.entity.Product;
 
 
