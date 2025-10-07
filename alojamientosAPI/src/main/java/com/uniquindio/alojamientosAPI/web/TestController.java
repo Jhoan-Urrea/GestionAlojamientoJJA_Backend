@@ -6,18 +6,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    @GetMapping("/public/hello")
+    @GetMapping("/api/public/hello")
     public String publicHello() {
         return "Hola 👋, este endpoint es PÚBLICO.";
     }
 
-    @GetMapping("/private/hello")
+    @GetMapping("/api/private/hello")
     public String privateHello() {
-        return "Hola 👤, este endpoint es PRIVADO (ROLE_USER).";
+        return "Hola 👤, este endpoint es PRIVADO (CLIENTE, ANFITRION o ADMINISTRADOR).";
     }
 
-    @GetMapping("/admin/hello")
+    @GetMapping("/api/admin/hello")
     public String adminHello() {
-        return "Hola 👑, este endpoint es solo para ADMIN.";
+        return "Hola 👑, este endpoint es solo para ADMINISTRADOR.";
     }
 }

@@ -1,9 +1,9 @@
-package com.uniquindio.alojamientosAPI.config.dto.services.ServicesImpl;
+package com.uniquindio.alojamientosAPI.domain.dto.services.ServicesImpl;
 
 
 
-import com.uniquindio.alojamientosAPI.config.dto.SellerDTO;
-import com.uniquindio.alojamientosAPI.config.dto.services.SellerService;
+import com.uniquindio.alojamientosAPI.domain.dto.SellerDTO;
+import com.uniquindio.alojamientosAPI.domain.dto.services.SellerService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
