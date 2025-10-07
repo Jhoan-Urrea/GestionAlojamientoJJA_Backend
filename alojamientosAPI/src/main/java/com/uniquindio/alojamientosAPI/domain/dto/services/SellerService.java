@@ -1,6 +1,6 @@
-package com.uniquindio.alojamientosAPI.config.dto.services;
+package com.uniquindio.alojamientosAPI.domain.dto.services;
 
-import com.uniquindio.alojamientosAPI.config.dto.SellerDTO;
+import com.uniquindio.alojamientosAPI.domain.dto.SellerDTO;
 import java.util.List;
 
 public interface SellerService {

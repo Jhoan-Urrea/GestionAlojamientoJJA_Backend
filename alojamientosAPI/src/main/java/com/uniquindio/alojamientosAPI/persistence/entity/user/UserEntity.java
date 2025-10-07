@@ -1,43 +1,57 @@
 package com.uniquindio.alojamientosAPI.persistence.entity.user;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_int")
     private Long id;
 
-    private String username;
+    @Column(name = "firstname", nullable = false)
+    private String firstName;
+
+    @Column(name = "lastname", nullable = false)
+    private String lastName;
+
+    @Column(name = "dayofbirth")
+    private LocalDate dayOfBirth;
+
+    @Column(name = "phonenumber")
+    private String phoneNumber;
+
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "password", nullable = false)
     private String password;
-    private boolean enabled;
+
+    @Column(name = "urlaccountphoto")
+    private String urlAccountPhoto;
+
+    @Column(name = "homeaddress")
+    private String homeAddress;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<RoleEntity> roles;
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<RoleEntity> roles = new HashSet<>();
 
-    // Getters y setters...
-
-    public String getUsername() { return username; }
-
-    public void setUsername(String username) { this.username = username; }
-
-    public String getPassword() { return password; }
-
-    public void setPassword(String password) { this.password = password; }
-
-    public boolean isEnabled() { return enabled; }
-
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
-
-    public Set<RoleEntity> getRoles() { return roles; }
-
-    public void setRoles(Set<RoleEntity> roles) { this.roles = roles; }
-
-    // Otros campos y métodos según necesidad
+    public boolean isEnabled() {
+        return true;
+    }
 }

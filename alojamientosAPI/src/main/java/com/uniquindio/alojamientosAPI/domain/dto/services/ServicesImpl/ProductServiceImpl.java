@@ -1,9 +1,9 @@
-package com.uniquindio.alojamientosAPI.config.dto.services.ServicesImpl;
+package com.uniquindio.alojamientosAPI.domain.dto.services.ServicesImpl;
 
-import com.uniquindio.alojamientosAPI.config.dto.ProductDTO;
-import com.uniquindio.alojamientosAPI.config.dto.SellerDTO;
-import com.uniquindio.alojamientosAPI.config.dto.services.ProductService;
-import com.uniquindio.alojamientosAPI.config.dto.services.SellerService;
+import com.uniquindio.alojamientosAPI.domain.dto.ProductDTO;
+import com.uniquindio.alojamientosAPI.domain.dto.SellerDTO;
+import com.uniquindio.alojamientosAPI.domain.dto.services.ProductService;
+import com.uniquindio.alojamientosAPI.domain.dto.services.SellerService;
 import com.uniquindio.alojamientosAPI.persistence.dao.ProductDAO;
 import com.uniquindio.alojamientosAPI.persistence.entity.Product;
 
