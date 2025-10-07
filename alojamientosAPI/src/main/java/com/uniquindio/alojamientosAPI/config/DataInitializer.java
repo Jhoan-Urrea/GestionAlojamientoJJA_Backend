@@ -11,45 +11,67 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Configuration
 public class DataInitializer {
 
     @Bean
-    public CommandLineRunner initUsers(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initUsers(UserRepository userRepository,
+                                       RoleRepository roleRepository,
+                                       PasswordEncoder passwordEncoder) {
         return args -> {
-            // Crear roles si no existen
-            RoleEntity roleUser = roleRepository.findByName(RoleEnum.ROLE_USER)
-                    .orElseGet(() -> roleRepository.save(new RoleEntity(RoleEnum.ROLE_USER)));
 
-            RoleEntity roleAdmin = roleRepository.findByName(RoleEnum.ROLE_ADMIN)
-                    .orElseGet(() -> roleRepository.save(new RoleEntity(RoleEnum.ROLE_ADMIN)));
+            System.out.println("🔐 Iniciando proceso de verificación y actualización de contraseñas...");
 
-            // Crear usuario user1 con rol USER
-            if (userRepository.findByUsername("user1").isEmpty()) {
-                UserEntity user1 = new UserEntity();
-                user1.setUsername("user1");
-                user1.setPassword(passwordEncoder.encode("password1"));
-                user1.setEnabled(true);
-                Set<RoleEntity> rolesUser1 = new HashSet<>();
-                rolesUser1.add(roleUser);
-                user1.setRoles(rolesUser1);
-                userRepository.save(user1);
+            // ⚠️ Solo leer roles existentes sin crear nuevos
+            Optional<RoleEntity> roleUserOpt = roleRepository.findByName(RoleEnum.CLIENTE);
+            Optional<RoleEntity> roleAdminOpt = roleRepository.findByName(RoleEnum.ADMINISTRADOR);
+
+            if (roleUserOpt.isEmpty() || roleAdminOpt.isEmpty()) {
+                System.out.println("⚠️ Algunos roles base no existen en la base de datos. Verifica la tabla 'roles'.");
             }
 
-            // Crear usuario admin con roles ADMIN y USER
-            if (userRepository.findByUsername("admin").isEmpty()) {
+            RoleEntity roleUser = roleUserOpt.orElse(null);
+            RoleEntity roleAdmin = roleAdminOpt.orElse(null);
+
+            // ✅ Actualizar contraseñas cifradas de usuarios existentes
+            userRepository.findAll().forEach(user -> {
+                String currentPassword = user.getPassword();
+
+                // Si la contraseña parece no estar cifrada (no empieza con "$2a$" o "$2b$")
+                if (!currentPassword.startsWith("$2a$") && !currentPassword.startsWith("$2b$")) {
+                    String encodedPassword = passwordEncoder.encode(currentPassword);
+                    user.setPassword(encodedPassword);
+                    userRepository.save(user);
+                    System.out.println("🔄 Contraseña cifrada para usuario: " + user.getEmail());
+                }
+            });
+
+            // ✅ Crear usuario admin solo si no existe
+            Optional<UserEntity> existingAdmin = userRepository.findByEmail("admin@example.com");
+            if (existingAdmin.isEmpty()) {
                 UserEntity admin = new UserEntity();
-                admin.setUsername("admin");
+                admin.setFirstName("Admin");
+                admin.setLastName("Principal");
+                admin.setEmail("admin@example.com");
                 admin.setPassword(passwordEncoder.encode("admin1234"));
-                admin.setEnabled(true);
+                admin.setPhoneNumber("3001111111");
+                admin.setHomeAddress("Calle 999");
+
                 Set<RoleEntity> rolesAdmin = new HashSet<>();
-                rolesAdmin.add(roleAdmin);
-                rolesAdmin.add(roleUser);
+                if (roleAdmin != null) rolesAdmin.add(roleAdmin);
+                if (roleUser != null) rolesAdmin.add(roleUser);
                 admin.setRoles(rolesAdmin);
+
                 userRepository.save(admin);
+                System.out.println("✅ Usuario admin creado correctamente.");
+            } else {
+                System.out.println("ℹ️ El usuario admin ya existe. No se creará uno nuevo.");
             }
+
+            System.out.println("🚀 Inicialización completada y contraseñas actualizadas correctamente.");
         };
     }
 }

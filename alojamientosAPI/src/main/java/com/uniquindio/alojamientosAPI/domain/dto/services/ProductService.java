@@ -1,6 +1,6 @@
-package com.uniquindio.alojamientosAPI.config.dto.services;
+package com.uniquindio.alojamientosAPI.domain.dto.services;
 
-import com.uniquindio.alojamientosAPI.config.dto.ProductDTO;
+import com.uniquindio.alojamientosAPI.domain.dto.ProductDTO;
 
 public interface ProductService {
     ProductDTO createProduct(ProductDTO productDTO);
