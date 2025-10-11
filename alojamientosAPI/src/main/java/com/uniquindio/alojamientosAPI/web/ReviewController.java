@@ -1,8 +1,10 @@
 package com.uniquindio.alojamientosAPI.web;
 
+import com.uniquindio.alojamientosAPI.domain.dto.GuestRatingDTO;
+import com.uniquindio.alojamientosAPI.domain.dto.ReviewCommentDTO;
 import com.uniquindio.alojamientosAPI.domain.services.ReviewService;
-import com.uniquindio.alojamientosAPI.persistence.entity.GuestRating;
-import com.uniquindio.alojamientosAPI.persistence.entity.ReviewComment;
+import com.uniquindio.alojamientosAPI.domain.mapper.GuestRatingMapper;
+import com.uniquindio.alojamientosAPI.domain.mapper.ReviewCommentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,13 +15,15 @@ public class ReviewController {
     private ReviewService reviewService;
 
     @PostMapping("/{id}/rate")
-    public GuestRating rateReservation(@PathVariable Long id, @RequestBody RateRequest request) {
-        return reviewService.rateReservation(id, request.getGuestId(), request.getRating());
+    public GuestRatingDTO rateReservation(@PathVariable Long id, @RequestBody RateRequest request) {
+        var entity = reviewService.rateReservation(id, request.getGuestId(), request.getRating());
+        return GuestRatingMapper.toDTO(entity);
     }
 
     @PostMapping("/{id}/comment")
-    public ReviewComment commentReservation(@PathVariable Long id, @RequestBody CommentRequest request) {
-        return reviewService.commentReservation(id, request.getGuestId(), request.getComment());
+    public ReviewCommentDTO commentReservation(@PathVariable Long id, @RequestBody CommentRequest request) {
+        var entity = reviewService.commentReservation(id, request.getGuestId(), request.getComment());
+        return ReviewCommentMapper.toDTO(entity);
     }
 
     // DTOs para las peticiones

@@ -6,7 +6,7 @@ import com.uniquindio.alojamientosAPI.persistence.entity.StateReservation;
 import com.uniquindio.alojamientosAPI.persistence.entity.ReservationGuest;
 import com.uniquindio.alojamientosAPI.persistence.repository.ReservationRepository;
 import com.uniquindio.alojamientosAPI.persistence.repository.StateReservationRepository;
-import com.uniquindio.alojamientosAPI.persistence.repository.ReservationGuesRepository;
+import com.uniquindio.alojamientosAPI.persistence.repository.ReservationGuestRepository;
 import com.uniquindio.alojamientosAPI.persistence.repository.UserRepository;
 import com.uniquindio.alojamientosAPI.persistence.repository.AccommodationRepository;
 import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import com.uniquindio.alojamientosAPI.domain.exception.ReservaSuperpuestaException;
+import com.uniquindio.alojamientosAPI.domain.exception.UsuarioNoAutorizadoException;
+import com.uniquindio.alojamientosAPI.domain.exception.EntidadNoEncontradaException;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -24,7 +27,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private StateReservationRepository stateReservationRepository;
     @Autowired
-    private ReservationGuesRepository reservationGuesRepository;
+    private ReservationGuestRepository reservationGuestRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -33,23 +36,23 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public Reservation createReservation(Long userId, Long accommodationId, LocalDate startDate, LocalDate endDate, java.util.List<Long> guestIds) {
-        UserEntity user = userRepository.findById(userId).orElse(null);
-        var accommodation = accommodationRepository.findById(accommodationId).orElse(null);
-        if (user == null || accommodation == null) return null;
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new EntidadNoEncontradaException("Usuario no encontrado"));
+        var accommodation = accommodationRepository.findById(accommodationId).orElseThrow(() -> new EntidadNoEncontradaException("Alojamiento no encontrado"));
         // Validar fechas
-        if (startDate == null || endDate == null || !endDate.isAfter(startDate)) return null;
+        if (startDate == null || endDate == null || !endDate.isAfter(startDate)) {
+            throw new IllegalArgumentException("Fechas inválidas");
+        }
         // Validar disponibilidad (evitar reservas superpuestas)
         java.util.List<Reservation> reservasExistentes = reservationRepository.findAll();
         for (Reservation r : reservasExistentes) {
             if (r.getAccommodation().getId().equals(accommodationId) &&
                 r.getState().getName().equalsIgnoreCase("CONFIRMADA") &&
                 !(endDate.isBefore(r.getStartDate()) || startDate.isAfter(r.getEndDate()))) {
-                return null;
+                throw new ReservaSuperpuestaException("Ya existe una reserva confirmada en ese rango de fechas");
             }
         }
         StateReservation estadoPendiente = stateReservationRepository.findAll().stream()
-            .filter(e -> e.getName().equalsIgnoreCase("PENDIENTE")).findFirst().orElse(null);
-        if (estadoPendiente == null) return null;
+            .filter(e -> e.getName().equalsIgnoreCase("PENDIENTE")).findFirst().orElseThrow(() -> new EntidadNoEncontradaException("Estado PENDIENTE no encontrado"));
         Reservation reserva = new Reservation();
         reserva.setUser(user);
         reserva.setAccommodation(accommodation);
@@ -59,13 +62,11 @@ public class ReservationServiceImpl implements ReservationService {
         reserva = reservationRepository.save(reserva);
         // Agregar invitados
         for (Long invitadoId : guestIds) {
-            UserEntity invitado = userRepository.findById(invitadoId).orElse(null);
-            if (invitado != null) {
-                ReservationGuest rg = new ReservationGuest();
-                rg.setReservation(reserva);
-                rg.setGuest(invitado);
-                reservationGuesRepository.save(rg);
-            }
+            UserEntity invitado = userRepository.findById(invitadoId).orElseThrow(() -> new EntidadNoEncontradaException("Invitado no encontrado"));
+            ReservationGuest rg = new ReservationGuest();
+            rg.setReservation(reserva);
+            rg.setGuest(invitado);
+            reservationGuestRepository.save(rg);
         }
         return reserva;
     }
@@ -73,14 +74,14 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public boolean cancelReservation(Long reservationId, Long userId) {
-        Reservation reserva = reservationRepository.findById(reservationId).orElse(null);
-        if (reserva == null) return false;
+        Reservation reserva = reservationRepository.findById(reservationId).orElseThrow(() -> new EntidadNoEncontradaException("Reserva no encontrada"));
         // Validar que el usuario sea el propietario
-        if (!reserva.getUser().getId().equals(userId)) return false;
+        if (!reserva.getUser().getId().equals(userId)) {
+            throw new UsuarioNoAutorizadoException("No tienes permiso para cancelar esta reserva");
+        }
         // Cambiar estado a cancelada
         StateReservation estadoCancelada = stateReservationRepository.findAll().stream()
-            .filter(e -> e.getName().equalsIgnoreCase("CANCELADA")).findFirst().orElse(null);
-        if (estadoCancelada == null) return false;
+            .filter(e -> e.getName().equalsIgnoreCase("CANCELADA")).findFirst().orElseThrow(() -> new EntidadNoEncontradaException("Estado CANCELADA no encontrado"));
         reserva.setState(estadoCancelada);
         reservationRepository.save(reserva);
         return true;

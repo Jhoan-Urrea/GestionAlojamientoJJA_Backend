@@ -2,6 +2,7 @@ package com.uniquindio.alojamientosAPI.security.auth;
 
 import com.uniquindio.alojamientosAPI.persistence.entity.user.RoleEntity;
 import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Getter
 public class CustomUserDetails implements UserDetails {
 
     private final UserEntity user;
@@ -58,7 +60,4 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
-    public UserEntity getUser() {
-        return user;
-    }
 }
