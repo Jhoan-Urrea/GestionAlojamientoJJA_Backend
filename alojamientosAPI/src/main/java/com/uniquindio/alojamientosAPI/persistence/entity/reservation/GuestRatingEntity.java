@@ -1,9 +1,12 @@
 package com.uniquindio.alojamientosAPI.persistence.entity.reservation;
 
+import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -11,36 +14,29 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "guest_ratings")
+@Table(name = "guest_rating")
 public class GuestRatingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JdbcTypeCode(SqlTypes.INTEGER)
     @Column(name = "id_int")
     private Long id;
 
-    @Column(name = "reservation_id", nullable = false)
-    private Long reservationId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
-    // Usuario que realiza la calificación (p.ej., anfitrión)
-    @Column(name = "rater_user_id", nullable = false)
-    private Long raterUserId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_reservation", nullable = false)
+    private ReservationEntity reservation;
 
-    // Usuario calificado (p.ej., huésped de la reserva)
-    @Column(name = "rated_user_id", nullable = false)
-    private Long ratedUserId;
+    @Column(name = "rating", nullable = false)
+    private Integer rating; // 1..5 entero, alineado con int4 en BD
 
-    @Column(name = "score", nullable = false)
-    private Integer score; // 1-5
+    @Column(name = "iscommentable")
+    private Boolean isCommentable;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    void prePersist() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-    }
+    @Column(name = "commentexpiration")
+    private LocalDate commentExpiration;
 }
-

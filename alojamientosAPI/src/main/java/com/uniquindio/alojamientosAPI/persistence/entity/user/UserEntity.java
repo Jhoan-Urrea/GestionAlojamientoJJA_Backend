@@ -3,6 +3,8 @@ package com.uniquindio.alojamientosAPI.persistence.entity.user;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -16,6 +18,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JdbcTypeCode(SqlTypes.INTEGER)
     @Column(name = "id_int")
     private Long id;
 
@@ -37,7 +40,7 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "urlaccountphoto")
+    @Column(name = "url_accountphoto")
     private String urlAccountPhoto;
 
     @Column(name = "homeaddress")

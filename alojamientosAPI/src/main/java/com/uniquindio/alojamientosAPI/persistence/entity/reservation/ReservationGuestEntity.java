@@ -2,6 +2,8 @@ package com.uniquindio.alojamientosAPI.persistence.entity.reservation;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -14,6 +16,7 @@ public class ReservationGuestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JdbcTypeCode(SqlTypes.INTEGER)
     @Column(name = "id_int")
     private Long id;
 
@@ -21,10 +24,12 @@ public class ReservationGuestEntity {
     @JoinColumn(name = "reservation_id", nullable = false)
     private ReservationEntity reservation;
 
-    @Column(name = "full_name", nullable = false, length = 100)
+    @Column(name = "fullname", nullable = false, length = 100)
     private String fullName;
 
-    @Column(name = "document_number", length = 50)
-    private String documentNumber;
-}
+    @Column(name = "age")
+    private Integer age;
 
+    @Column(name = "relationship", length = 40)
+    private String relationship;
+}

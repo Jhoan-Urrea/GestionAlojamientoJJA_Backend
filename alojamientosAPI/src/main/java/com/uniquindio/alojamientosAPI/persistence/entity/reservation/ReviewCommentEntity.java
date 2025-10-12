@@ -1,9 +1,10 @@
 package com.uniquindio.alojamientosAPI.persistence.entity.reservation;
 
+import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -16,26 +17,22 @@ public class ReviewCommentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JdbcTypeCode(SqlTypes.INTEGER)
     @Column(name = "id_int")
     private Long id;
 
-    @Column(name = "reservation_id", nullable = false)
-    private Long reservationId;
+    @Column(name = "message", nullable = false, columnDefinition = "TEXT")
+    private String message;
 
-    @Column(name = "author_user_id", nullable = false)
-    private Long authorUserId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
-    @Column(name = "comment", columnDefinition = "TEXT", nullable = false)
-    private String comment;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "guest_rating_id", nullable = false)
+    private GuestRatingEntity guestRating;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    void prePersist() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_comment_id")
+    private ReviewCommentEntity parentComment;
 }
-
