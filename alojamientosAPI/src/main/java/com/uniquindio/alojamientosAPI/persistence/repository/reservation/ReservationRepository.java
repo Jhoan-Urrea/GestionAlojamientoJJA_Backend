@@ -12,11 +12,17 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
 
     List<ReservationEntity> findByAccommodation_Id(Long accommodationId);
 
-    // Útil para validar superposición (se usará en Commit 3)
+    // Útil para validar superposición (estricta): permite back-to-back
+    boolean existsByAccommodation_IdAndCheckInLessThanAndCheckOutGreaterThan(
+            Long accommodationId,
+            LocalDate checkOut,
+            LocalDate checkIn
+    );
+
+    // Opción inclusiva (bloquea back-to-back): se deja por si se necesita
     boolean existsByAccommodation_IdAndCheckInLessThanEqualAndCheckOutGreaterThanEqual(
             Long accommodationId,
             LocalDate checkOut,
             LocalDate checkIn
     );
 }
-
