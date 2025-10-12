@@ -4,9 +4,10 @@ import com.uniquindio.alojamientosAPI.persistence.entity.accommodation.Accommoda
 import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -19,7 +20,8 @@ public class ReservationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_int")
+    @JdbcTypeCode(SqlTypes.INTEGER)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -27,32 +29,19 @@ public class ReservationEntity {
     private AccommodationEntity accommodation;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "customer_user_id", nullable = false)
-    private UserEntity customer;
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "state_reservation_id", nullable = false)
     private StateReservationEntity state;
 
-    @Column(name = "checkin_date", nullable = false)
-    private LocalDate checkInDate;
+    @Column(name = "check_in", nullable = false)
+    private LocalDate checkIn;
 
-    @Column(name = "checkout_date", nullable = false)
-    private LocalDate checkOutDate;
+    @Column(name = "check_out", nullable = false)
+    private LocalDate checkOut;
 
-    @Column(name = "guests_count", nullable = false)
-    private Integer guestsCount;
-
-    @Column(name = "total_price")
-    private Double totalPrice;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    void prePersist() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-    }
+    @Column(name = "count_roommates")
+    private Integer countRoommates;
 }
