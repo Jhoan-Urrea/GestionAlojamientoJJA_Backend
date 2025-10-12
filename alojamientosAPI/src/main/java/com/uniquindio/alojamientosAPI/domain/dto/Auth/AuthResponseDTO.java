@@ -4,6 +4,7 @@ import java.util.Set;
 
 public record AuthResponseDTO(
     String token,
+    Long userId,
     String email,
     String firstName,
     String lastName,
