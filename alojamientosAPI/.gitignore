@@ -33,3 +33,13 @@ build/
 ### VS Code ###
 .vscode/
 
+### Environment Variables & Secrets ###
+.env
+.env.local
+.env.*.local
+*.env
+application-*.properties.local
+
+### Sensitive Configuration Files ###
+**/application-dev.properties.backup
+**/application-prod.properties.backup
