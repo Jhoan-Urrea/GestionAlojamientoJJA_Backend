@@ -77,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
         // Generar token JWT
         System.out.println("🔐 Generando token JWT...");
         UserDetails userDetails = createUserDetails(savedUser);
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateToken(userDetails, savedUser.getId());
         System.out.println("✅ Token generado exitosamente");
 
         // Construir respuesta
@@ -101,7 +101,7 @@ public class AuthServiceImpl implements AuthService {
 
         // Generar token JWT
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateToken(userDetails, user.getId());
 
         // Construir respuesta
         return buildAuthResponse(token, user);
@@ -124,6 +124,7 @@ public class AuthServiceImpl implements AuthService {
 
         return new AuthResponseDTO(
                 token,
+                user.getId(),
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
