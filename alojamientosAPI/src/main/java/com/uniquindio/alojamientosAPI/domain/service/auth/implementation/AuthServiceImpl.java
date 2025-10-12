@@ -35,6 +35,10 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
+
+    /**
+     * Servicio encargado de registro del usuario.
+     */
     @Override
     @Transactional
     public AuthResponseDTO register(RegisterDTO registerDTO) {
