@@ -25,16 +25,30 @@ public class DataInitializer {
 
             System.out.println("🔐 Iniciando proceso de verificación y actualización de contraseñas...");
 
-            // ⚠️ Solo leer roles existentes sin crear nuevos
-            Optional<RoleEntity> roleUserOpt = roleRepository.findByName(RoleEnum.CLIENTE);
-            Optional<RoleEntity> roleAdminOpt = roleRepository.findByName(RoleEnum.ADMINISTRADOR);
+            // ✅ Crear roles si no existen
+            RoleEntity roleCliente = roleRepository.findByName(RoleEnum.CLIENTE)
+                    .orElseGet(() -> {
+                        RoleEntity newRole = new RoleEntity(RoleEnum.CLIENTE, "Cliente del sistema");
+                        roleRepository.save(newRole);
+                        System.out.println("✅ Rol CLIENTE creado");
+                        return newRole;
+                    });
 
-            if (roleUserOpt.isEmpty() || roleAdminOpt.isEmpty()) {
-                System.out.println("⚠️ Algunos roles base no existen en la base de datos. Verifica la tabla 'roles'.");
-            }
+            RoleEntity roleAnfitrion = roleRepository.findByName(RoleEnum.ANFITRION)
+                    .orElseGet(() -> {
+                        RoleEntity newRole = new RoleEntity(RoleEnum.ANFITRION, "Anfitrión de alojamientos");
+                        roleRepository.save(newRole);
+                        System.out.println("✅ Rol ANFITRION creado");
+                        return newRole;
+                    });
 
-            RoleEntity roleUser = roleUserOpt.orElse(null);
-            RoleEntity roleAdmin = roleAdminOpt.orElse(null);
+            RoleEntity roleAdmin = roleRepository.findByName(RoleEnum.ADMINISTRADOR)
+                    .orElseGet(() -> {
+                        RoleEntity newRole = new RoleEntity(RoleEnum.ADMINISTRADOR, "Administrador del sistema");
+                        roleRepository.save(newRole);
+                        System.out.println("✅ Rol ADMINISTRADOR creado");
+                        return newRole;
+                    });
 
             // ✅ Actualizar contraseñas cifradas de usuarios existentes
             userRepository.findAll().forEach(user -> {
@@ -61,8 +75,8 @@ public class DataInitializer {
                 admin.setHomeAddress("Calle 999");
 
                 Set<RoleEntity> rolesAdmin = new HashSet<>();
-                if (roleAdmin != null) rolesAdmin.add(roleAdmin);
-                if (roleUser != null) rolesAdmin.add(roleUser);
+                rolesAdmin.add(roleAdmin);
+                rolesAdmin.add(roleCliente);
                 admin.setRoles(rolesAdmin);
 
                 userRepository.save(admin);

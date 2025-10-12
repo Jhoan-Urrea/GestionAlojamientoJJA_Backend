@@ -38,8 +38,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponseDTO register(RegisterDTO registerDTO) {
+        System.out.println("📝 Iniciando registro para email: " + registerDTO.email());
+        
         // Verificar si el email ya existe
         if (userRepository.findByEmail(registerDTO.email()).isPresent()) {
+            System.err.println("⚠️ Email ya registrado: " + registerDTO.email());
             throw new IllegalArgumentException("El email ya está registrado");
         }
 
@@ -54,19 +57,28 @@ public class AuthServiceImpl implements AuthService {
         newUser.setHomeAddress(registerDTO.homeAddress());
 
         // Asignar rol de CLIENTE por defecto
+        System.out.println("🔍 Buscando rol CLIENTE...");
         RoleEntity clientRole = roleRepository.findByName(RoleEnum.CLIENTE)
-                .orElseThrow(() -> new RuntimeException("Rol CLIENTE no encontrado en la base de datos"));
+                .orElseThrow(() -> {
+                    System.err.println("❌ Rol CLIENTE no encontrado en la base de datos");
+                    return new RuntimeException("Rol CLIENTE no encontrado en la base de datos");
+                });
         
         Set<RoleEntity> roles = new HashSet<>();
         roles.add(clientRole);
         newUser.setRoles(roles);
+        System.out.println("✅ Rol CLIENTE asignado");
 
         // Guardar usuario
+        System.out.println("💾 Guardando usuario en BD...");
         UserEntity savedUser = userRepository.save(newUser);
+        System.out.println("✅ Usuario guardado con ID: " + savedUser.getId());
 
         // Generar token JWT
+        System.out.println("🔐 Generando token JWT...");
         UserDetails userDetails = createUserDetails(savedUser);
         String token = jwtUtil.generateToken(userDetails);
+        System.out.println("✅ Token generado exitosamente");
 
         // Construir respuesta
         return buildAuthResponse(token, savedUser);
