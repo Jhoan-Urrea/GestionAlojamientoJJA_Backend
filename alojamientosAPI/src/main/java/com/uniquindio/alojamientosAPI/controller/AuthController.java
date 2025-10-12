@@ -23,15 +23,20 @@ public class AuthController {
      * @return Token JWT y datos del usuario
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
         try {
             AuthResponseDTO response = authService.register(registerDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             // Email duplicado u otro error de validación
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            System.err.println("❌ Error de validación en register: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(java.util.Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            System.err.println("❌ Error interno en register: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(java.util.Map.of("error", "Error interno del servidor: " + e.getMessage()));
         }
     }
 
@@ -41,13 +46,16 @@ public class AuthController {
      * @return Token JWT y datos del usuario
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
         try {
             AuthResponseDTO response = authService.login(loginDTO);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             // Credenciales inválidas
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            System.err.println("❌ Error en login: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(java.util.Map.of("error", "Credenciales inválidas: " + e.getMessage()));
         }
     }
 }
