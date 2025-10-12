@@ -1,5 +1,7 @@
 package com.uniquindio.alojamientosAPI.persistence.entity.reservation;
 
+import com.uniquindio.alojamientosAPI.persistence.entity.accommodation.AccommodationEntity;
+import com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,15 +22,17 @@ public class ReservationEntity {
     @Column(name = "id_int")
     private Long id;
 
-    // Referencias por ID para evitar acoplamiento con otros módulos
-    @Column(name = "accommodation_id", nullable = false)
-    private Long accommodationId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "accommodation_id", nullable = false)
+    private AccommodationEntity accommodation;
 
-    @Column(name = "customer_user_id", nullable = false)
-    private Long customerUserId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "customer_user_id", nullable = false)
+    private UserEntity customer;
 
-    @Column(name = "state_reservation_id", nullable = false)
-    private Long stateReservationId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "state_reservation_id", nullable = false)
+    private StateReservationEntity state;
 
     @Column(name = "checkin_date", nullable = false)
     private LocalDate checkInDate;
