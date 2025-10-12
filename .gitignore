@@ -1,0 +1,18 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Docker Compose
+compose.yaml
+docker-compose.yml
+docker-compose.yaml
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
