@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
+import com.uniquindio.alojamientosAPI.domain.exception.UsuarioNoAutorizadoException;
 
 @RestController
 @RequestMapping("/reservations")
@@ -33,7 +34,7 @@ public class ReservationController {
     public List<ReservationDTO> getReservationsByUser(@PathVariable Long userId, @RequestParam Long requesterId) {
         // Solo el propietario puede ver sus reservas
         if (!userId.equals(requesterId)) {
-            throw new RuntimeException("No autorizado para ver estas reservas");
+            throw new UsuarioNoAutorizadoException("No autorizado para ver estas reservas");
         }
         return reservationService.getReservationsByUser(userId)
                 .stream()

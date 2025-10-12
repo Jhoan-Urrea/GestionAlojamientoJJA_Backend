@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
+@Table(name = "app_user")
 public class User {
     // Getters y setters
     @Id
@@ -17,4 +18,3 @@ public class User {
     // Puedes agregar más campos según necesidad
 
 }
-

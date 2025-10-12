@@ -16,10 +16,12 @@ public class ReviewComment {
 
     @NotNull
     @OneToOne
+    @JoinColumn(name = "reservation_id", nullable = false, unique = true)
     private Reservation reservation;
 
     @NotNull
     @ManyToOne
+    @JoinColumn(name = "guest_id", nullable = false)
     private com.uniquindio.alojamientosAPI.persistence.entity.user.UserEntity guest;
 
     @NotBlank
