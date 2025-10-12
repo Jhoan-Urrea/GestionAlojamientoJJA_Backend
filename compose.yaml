@@ -1,0 +1,187 @@
+services:
+  # ========================
+  # PostgreSQL - Desarrollo
+  # ========================
+  postgres_dev:
+    image: postgres:17.6-alpine
+    container_name: postgres_dev_container
+    environment:
+      POSTGRES_DB: alojamientos_horen_dev
+      POSTGRES_USER: mupwizvc
+      POSTGRES_PASSWORD: yjobapxmgodtpadgmfye
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      POSTGRES_SHARED_PRELOAD_LIBRARIES: pg_stat_statements
+    ports:
+      - "5434:5432"  # Puerto diferente para desarrollo
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./init-scripts/dev:/docker-entrypoint-initdb.d
+    networks:
+      - backend_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mupwizvc -d alojamientos_horen_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=128MB
+      -c effective_cache_size=512MB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+      -c max_worker_processes=4
+      -c max_parallel_workers_per_gather=2
+      -c max_parallel_workers=4
+      -c max_parallel_maintenance_workers=2
+
+  # ========================
+  # PostgreSQL - Pruebas
+  # ========================
+  postgres_test:
+    image: postgres:17.6-alpine
+    container_name: postgres_test_container
+    environment:
+      POSTGRES_DB: alojamientos_horen_test
+      POSTGRES_USER: jhoan
+      POSTGRES_PASSWORD: jhoan12345
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      POSTGRES_SHARED_PRELOAD_LIBRARIES: pg_stat_statements
+    ports:
+      - "5432:5432"  # Puerto estándar para testing
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+      - ./init-scripts/test:/docker-entrypoint-initdb.d
+    networks:
+      - backend_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jhoan -d alojamientos_horen_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=128MB
+      -c effective_cache_size=512MB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+      -c max_worker_processes=4
+      -c max_parallel_workers_per_gather=2
+      -c max_parallel_workers=4
+      -c max_parallel_maintenance_workers=2
+
+  # ========================
+  # PostgreSQL - Producción (Local)
+  # ========================
+  postgres_prod:
+    image: postgres:17.6-alpine
+    container_name: postgres_prod_container
+    environment:
+      POSTGRES_DB: alojamientos_horen
+      POSTGRES_USER: mupwizvc
+      POSTGRES_PASSWORD: yjobapxmgodtpadgmfye
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      POSTGRES_SHARED_PRELOAD_LIBRARIES: pg_stat_statements
+    ports:
+      - "5435:5432"  # Puerto diferente para producción local
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./init-scripts/prod:/docker-entrypoint-initdb.d
+    networks:
+      - backend_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mupwizvc -d alojamientos_horen"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=128MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=8MB
+      -c min_wal_size=2GB
+      -c max_wal_size=8GB
+      -c max_worker_processes=8
+      -c max_parallel_workers_per_gather=4
+      -c max_parallel_workers=8
+      -c max_parallel_maintenance_workers=4
+
+  # ========================
+  # pgAdmin
+  # ========================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "8002:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json
+    depends_on:
+      postgres_dev:
+        condition: service_healthy
+      postgres_test:
+        condition: service_healthy
+      postgres_prod:
+        condition: service_healthy
+    networks:
+      - backend_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/misc/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# ========================
+# Volúmenes
+# ========================
+volumes:
+  postgres_dev_data:
+    driver: local
+  postgres_test_data:
+    driver: local
+  postgres_prod_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+# ========================
+# Redes
+# ========================
+networks:
+  backend_network:
+    driver: bridge
