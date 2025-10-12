@@ -59,6 +59,8 @@ public class ReservationServiceImpl implements ReservationService {
         reserva.setStartDate(startDate);
         reserva.setEndDate(endDate);
         reserva.setState(estadoPendiente);
+        // Inicializar lista de invitados para cumplir @NotNull
+        reserva.setGuests(new java.util.ArrayList<>());
         reserva = reservationRepository.save(reserva);
         // Agregar invitados
         for (Long invitadoId : guestIds) {
@@ -67,6 +69,8 @@ public class ReservationServiceImpl implements ReservationService {
             rg.setReservation(reserva);
             rg.setGuest(invitado);
             reservationGuestRepository.save(rg);
+            // Mantener la relación en memoria
+            reserva.getGuests().add(rg);
         }
         return reserva;
     }
