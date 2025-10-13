@@ -1,31 +1,29 @@
 package com.uniquindio.alojamientosAPI.persistence.entity.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "roles")
 public class RoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JdbcTypeCode(SqlTypes.INTEGER) // PostgreSQL usa int4 para SERIAL
     @Column(name = "id_int")
-    private Long id;
+    private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "name", nullable = false, unique = true)
+    @Convert(converter = RoleEnumConverter.class)
+    @Column(name = "name", nullable = false, length = 50)
     private RoleEnum name;
 
-    @Column(name = "description")
+    @Column(columnDefinition = "TEXT")
     private String description;
-
-    public RoleEntity() {}
-
-    public RoleEntity(RoleEnum name, String description) {
-        this.name = name;
-        this.description = description;
-    }
 }

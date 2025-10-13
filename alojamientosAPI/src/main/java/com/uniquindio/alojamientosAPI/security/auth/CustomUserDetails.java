@@ -10,6 +10,10 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Implementación personalizada de UserDetails para integrar la entidad UserEntity
+ * con el sistema de autenticación de Spring Security.
+ */
 public class CustomUserDetails implements UserDetails {
 
     private final UserEntity user;
@@ -18,13 +22,15 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
+    /**
+     * Convierte los roles del usuario en autoridades compatibles con Spring Security.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<RoleEntity> roles = user.getRoles();
 
-        // 🔑 Convertir cada RoleEntity en una autoridad válida de Spring Security
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name())) // Ej: ROLE_ADMINISTRADOR
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name())) // Ejemplo: ROLE_ADMINISTRADOR
                 .collect(Collectors.toSet());
     }
 
@@ -40,22 +46,22 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Puedes implementar lógica real si lo deseas
+        return true; // Puede personalizarse si tu entidad maneja fechas de expiración
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Puedes agregar campo "locked" en tu entidad
+        return true; // Puedes usar un campo "locked" en la entidad si lo deseas
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return true; // Ideal para tokens o credenciales temporales
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return true; // Puedes vincularlo a un campo "active" en tu entidad
     }
 
     public UserEntity getUser() {
