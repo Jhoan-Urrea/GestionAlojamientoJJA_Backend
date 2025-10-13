@@ -32,7 +32,7 @@ public class GuestRatingEntity {
     private ReservationEntity reservation;
 
     @Column(name = "rating", nullable = false)
-    private Integer rating; // 1..5 entero, alineado con int4 en BD
+    private Integer rating; // entero 1..5 para alinear con BD (INTEGER)
 
     @Column(name = "iscommentable")
     private Boolean isCommentable;

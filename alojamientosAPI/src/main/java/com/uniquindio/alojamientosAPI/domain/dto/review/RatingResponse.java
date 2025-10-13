@@ -1,7 +1,12 @@
 package com.uniquindio.alojamientosAPI.domain.dto.review;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
+@Setter
+@Getter
 public class RatingResponse {
     private Long id;
     private Long reservationId;
@@ -10,22 +15,4 @@ public class RatingResponse {
     private Boolean commentable;
     private LocalDate commentExpiration;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Long getReservationId() { return reservationId; }
-    public void setReservationId(Long reservationId) { this.reservationId = reservationId; }
-
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-
-    public Integer getRating() { return rating; }
-    public void setRating(Integer rating) { this.rating = rating; }
-
-    public Boolean getCommentable() { return commentable; }
-    public void setCommentable(Boolean commentable) { this.commentable = commentable; }
-
-    public LocalDate getCommentExpiration() { return commentExpiration; }
-    public void setCommentExpiration(LocalDate commentExpiration) { this.commentExpiration = commentExpiration; }
 }
-
