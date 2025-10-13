@@ -20,7 +20,7 @@ public class RoleEntity {
     @Column(name = "id_int")
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RoleEnumConverter.class)
     @Column(name = "name", nullable = false, length = 50)
     private RoleEnum name;
 
