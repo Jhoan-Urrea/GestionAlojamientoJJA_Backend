@@ -12,9 +12,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class ServiceDTO {
-    private Integer id;
+    private Long id;
     private String title;
     private String description;
-    private CategoryDTO category;
+    private Long categoryId;       // ✅ coincide con la entidad
+    private Long accommodationId;  // ✅ coincide con la entidad
 }
-

@@ -25,15 +25,14 @@ public class PictureEntity {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-    
+
     @Column(name = "ismain")
-    @Builder.Default
-    private Boolean isMain = false;
+    private Boolean isMain;
 
     @Column(columnDefinition = "TEXT")
     private String url;
 
-    // Referencia por ID simple para mantener independencia del módulo
-    @Column(name = "accommodation_id", nullable = false)
-    private Long accommodationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "accommodation_id", nullable = false)
+private AccommodationEntity accommodation;
 }

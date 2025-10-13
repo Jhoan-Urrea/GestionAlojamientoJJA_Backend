@@ -1,15 +1,15 @@
 package com.uniquindio.alojamientosAPI.domain.service.accommodation;
 
+import com.uniquindio.alojamientosAPI.persistence.entity.accommodation.AccommodationEntity;
+
 import java.util.List;
 import java.util.Optional;
 
-import com.uniquindio.alojamientosAPI.persistence.entity.accommodation.AccommodationEntity;
-
 public interface AccommodationService {
 
-    AccommodationEntity create(AccommodationEntity accommodation);
+    AccommodationEntity create(AccommodationEntity entity);
 
-    AccommodationEntity update(Long id, AccommodationEntity accommodation);
+    AccommodationEntity update(Long id, AccommodationEntity entity);
 
     void delete(Long id);
 
@@ -20,4 +20,6 @@ public interface AccommodationService {
     List<AccommodationEntity> findByCity(Long cityId);
 
     List<AccommodationEntity> findByHost(Long hostUserId);
+
+    List<AccommodationEntity> findByState(Long stateId);
 }

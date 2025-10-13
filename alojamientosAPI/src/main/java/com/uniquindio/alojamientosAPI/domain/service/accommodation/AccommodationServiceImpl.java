@@ -1,10 +1,10 @@
 package com.uniquindio.alojamientosAPI.domain.service.accommodation;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import com.uniquindio.alojamientosAPI.persistence.entity.accommodation.AccommodationEntity;
 import com.uniquindio.alojamientosAPI.persistence.repository.accommodation.AccommodationRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,24 +16,23 @@ public class AccommodationServiceImpl implements AccommodationService {
     private final AccommodationRepository accommodationRepository;
 
     @Override
-    public AccommodationEntity create(AccommodationEntity accommodation) {
-        return accommodationRepository.save(accommodation);
+    public AccommodationEntity create(AccommodationEntity entity) {
+        return accommodationRepository.save(entity);
     }
 
     @Override
-    public AccommodationEntity update(Long id, AccommodationEntity accommodation) {
-        Optional<AccommodationEntity> existing = accommodationRepository.findById(id);
-        if (existing.isEmpty()) {
-            throw new IllegalArgumentException("Accommodation not found with id: " + id);
+    public AccommodationEntity update(Long id, AccommodationEntity updated) {
+        if (!accommodationRepository.existsById(id)) {
+            throw new EntityNotFoundException("Accommodation not found with id: " + id);
         }
-        accommodation.setId(id);
-        return accommodationRepository.save(accommodation);
+        updated.setId(id);
+        return accommodationRepository.save(updated);
     }
 
     @Override
     public void delete(Long id) {
         if (!accommodationRepository.existsById(id)) {
-            throw new IllegalArgumentException("Accommodation not found with id: " + id);
+            throw new EntityNotFoundException("Accommodation not found with id: " + id);
         }
         accommodationRepository.deleteById(id);
     }
@@ -58,6 +57,8 @@ public class AccommodationServiceImpl implements AccommodationService {
         return accommodationRepository.findByHostUserId(hostUserId);
     }
 
-    
-
+    @Override
+    public List<AccommodationEntity> findByState(Long stateId) {
+        return accommodationRepository.findByStateAccommodationId(stateId);
+    }
 }

@@ -1,19 +1,19 @@
 package com.uniquindio.alojamientosAPI.persistence.entity.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserEntity {
 
     @Id
@@ -22,39 +22,36 @@ public class UserEntity {
     @Column(name = "id_int")
     private Long id;
 
-    @Column(name = "firstname", nullable = false)
+    @Column(name = "firstname", nullable = false, length = 50)
     private String firstName;
 
-    @Column(name = "lastname", nullable = false)
+    @Column(name = "lastname", nullable = false, length = 50)
     private String lastName;
 
-    @Column(name = "dayofbirth")
+    @Column(name = "dayOfBirth")
     private LocalDate dayOfBirth;
 
-    @Column(name = "phonenumber")
+    @Column(name = "phoneNumber", length = 50)
     private String phoneNumber;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true, length = 50)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "url_accountphoto")
+    @Column(name = "url_accountPhoto", columnDefinition = "TEXT")
     private String urlAccountPhoto;
 
-    @Column(name = "homeaddress")
+    @Column(name = "homeAddress", columnDefinition = "TEXT")
     private String homeAddress;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    // Relación con roles
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id_int"),
+        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id_int")
     )
-    private Set<RoleEntity> roles = new HashSet<>();
-
-    public boolean isEnabled() {
-        return true;
-    }
+    private Set<RoleEntity> roles;
 }
