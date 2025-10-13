@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,10 +24,14 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final com.uniquindio.alojamientosAPI.domain.service.user.UserRegistrationService userRegistrationService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService) {
+    public AuthController(AuthenticationManager authenticationManager,
+                          JwtService jwtService,
+                          com.uniquindio.alojamientosAPI.domain.service.user.UserRegistrationService userRegistrationService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.userRegistrationService = userRegistrationService;
     }
 
     @PostMapping("/login")
@@ -50,6 +55,16 @@ public class AuthController {
                     .build());
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(401).build();
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody @Valid com.uniquindio.alojamientosAPI.domain.dto.user.RegisterUserCommand command) {
+        try {
+            var result = userRegistrationService.register(command);
+            return ResponseEntity.status(201).body(result);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         }
     }
 
