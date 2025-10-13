@@ -22,10 +22,10 @@ public class UserEntity {
     @Column(name = "id_int")
     private Long id;
 
-    @Column(name = "firstName", nullable = false, length = 50)
+    @Column(name = "firstname", nullable = false, length = 50)
     private String firstName;
 
-    @Column(name = "lastName", nullable = false, length = 50)
+    @Column(name = "lastname", nullable = false, length = 50)
     private String lastName;
 
     @Column(name = "dayOfBirth")

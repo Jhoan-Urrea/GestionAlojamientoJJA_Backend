@@ -9,6 +9,7 @@ import org.mapstruct.Mappings;
 import com.uniquindio.alojamientosAPI.domain.dto.accommodation.AccommodationDTO;
 import com.uniquindio.alojamientosAPI.persistence.entity.accommodation.AccommodationEntity;
 
+
 @Mapper(componentModel = "spring", uses = {ServiceMapper.class, PictureMapper.class})
 public interface AccommodationMapper {
 
