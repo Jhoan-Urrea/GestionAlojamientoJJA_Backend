@@ -20,7 +20,6 @@ import com.uniquindio.alojamientosAPI.persistence.repository.reservation.StateRe
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -134,7 +133,7 @@ class ReservationAndReviewWorkflowTest {
         rateReq.setRating(5);
         RatingResponse rateRes = reviewService.createRating(1L, rateReq);
         assertThat(rateRes.getId()).isEqualTo(500L);
-        assertEquals(5, rateRes.getRating());
+        assertThat(rateRes.getRating()).isEqualTo(5);
 
         // Stubs comment save
         when(reviewCommentRepository.save(any(ReviewCommentEntity.class)))
@@ -163,4 +162,3 @@ class ReservationAndReviewWorkflowTest {
         verify(reviewCommentRepository).save(any(ReviewCommentEntity.class));
     }
 }
-

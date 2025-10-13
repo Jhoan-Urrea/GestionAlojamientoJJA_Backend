@@ -22,4 +22,14 @@ public interface AccommodationService {
     List<AccommodationEntity> findByHost(Long hostUserId);
 
     List<AccommodationEntity> findByState(Long stateId);
+
+    AccommodationEntity updateState(Long id, String stateName);
+
+    default AccommodationEntity activate(Long id) {
+        return updateState(id, "Activo");
+    }
+
+    default AccommodationEntity deactivate(Long id) {
+        return updateState(id, "Inactivo");
+    }
 }
