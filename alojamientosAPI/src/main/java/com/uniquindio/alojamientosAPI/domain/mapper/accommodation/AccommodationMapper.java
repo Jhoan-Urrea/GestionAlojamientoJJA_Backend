@@ -1,12 +1,10 @@
 package com.uniquindio.alojamientosAPI.domain.mapper.accommodation;
 
-
-
 import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mappings;
 
 import com.uniquindio.alojamientosAPI.domain.dto.accommodation.AccommodationDTO;
 import com.uniquindio.alojamientosAPI.persistence.entity.accommodation.AccommodationEntity;
@@ -14,19 +12,45 @@ import com.uniquindio.alojamientosAPI.persistence.entity.accommodation.Accommoda
 @Mapper(componentModel = "spring", uses = {ServiceMapper.class, PictureMapper.class})
 public interface AccommodationMapper {
 
-    AccommodationMapper INSTANCE = Mappers.getMapper(AccommodationMapper.class);
+    @Mappings({
+        // ✅ Campos simples
+        @Mapping(source = "id", target = "id"),
+        @Mapping(source = "title", target = "title"),
+        @Mapping(source = "description", target = "description"),
+        @Mapping(source = "address", target = "address"),
+        @Mapping(source = "dayPrice", target = "dayPrice"),
+        @Mapping(source = "capacity", target = "capacity"),
 
-    // Entity a DTO
-    @Mapping(source = "stateAccommodation.name", target = "stateName")
-    @Mapping(source = "city.name", target = "cityName")
-    @Mapping(source = "hostUser.firstName", target = "hostName")
-    AccommodationDTO toDto(AccommodationEntity accommodation);
+        // ✅ Campos derivados desde relaciones
+        @Mapping(source = "stateAccommodation.name", target = "stateName"),
+        @Mapping(source = "city.name", target = "cityName"),
+        @Mapping(source = "hostUser.firstName", target = "hostName"),
 
-    List<AccommodationDTO> toDtoList(List<AccommodationEntity> accommodations);
+        // ✅ Relaciones (ya existen en tu DTO)
+        @Mapping(source = "pictures", target = "pictures"),
+        @Mapping(source = "services", target = "services")
+    })
+    AccommodationDTO toDto(AccommodationEntity entity);
 
-    // DTO a Entity (útil para POST/PUT si lo necesitas)
-    @Mapping(target = "stateAccommodation", ignore = true)
-    @Mapping(target = "city", ignore = true)
-    @Mapping(target = "hostUser", ignore = true)
+    @Mappings({
+        // ✅ Mapeo inverso: desde DTO a entidad
+        @Mapping(source = "id", target = "id"),
+        @Mapping(source = "title", target = "title"),
+        @Mapping(source = "description", target = "description"),
+        @Mapping(source = "address", target = "address"),
+        @Mapping(source = "dayPrice", target = "dayPrice"),
+        @Mapping(source = "capacity", target = "capacity"),
+
+        // 🚫 Ignoramos relaciones (existen en la entidad, pero no en el DTO)
+        @Mapping(target = "hostUser", ignore = true),
+        @Mapping(target = "stateAccommodation", ignore = true),
+        @Mapping(target = "city", ignore = true),
+        @Mapping(target = "pictures", ignore = true),
+        @Mapping(target = "services", ignore = true),
+        @Mapping(target = "favorites", ignore = true),
+        @Mapping(target = "reservations", ignore = true)
+    })
     AccommodationEntity toEntity(AccommodationDTO dto);
+
+    List<AccommodationDTO> toDtoList(List<AccommodationEntity> entities);
 }
