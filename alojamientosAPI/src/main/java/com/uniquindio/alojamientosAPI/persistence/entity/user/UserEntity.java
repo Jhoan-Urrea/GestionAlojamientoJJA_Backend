@@ -46,12 +46,12 @@ public class UserEntity {
     @Column(name = "homeAddress", columnDefinition = "TEXT")
     private String homeAddress;
 
-    // Relación con roles
+    // Relación con roles (sin cascadas peligrosas)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id_int"),
-        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id_int")
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id_int", foreignKey = @ForeignKey(name = "fk_user_roles_user")),
+        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id_int", foreignKey = @ForeignKey(name = "fk_user_roles_role"))
     )
     private Set<RoleEntity> roles;
 }
