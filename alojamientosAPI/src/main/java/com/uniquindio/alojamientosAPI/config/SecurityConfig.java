@@ -15,10 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(proxyTargetClass = true)
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -64,9 +63,12 @@ public class SecurityConfig {
                         "/api/health/**",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
-                        "/swagger-ui.html"
+                        "/swagger-ui.html",
+                        "/api/public/**"
                 ).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
+                // Reglas específicas para acomodaciones
+                .requestMatchers("/api/accommodations/*/activate", "/api/accommodations/*/deactivate").hasAnyRole("ANFITRION", "ADMINISTRADOR")
+                .requestMatchers("/api/accommodations/**").hasRole("ANFITRION")
                 .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
                 .requestMatchers("/api/host/**").hasRole("ANFITRION")
                 .requestMatchers("/api/client/**").hasRole("CLIENTE")
