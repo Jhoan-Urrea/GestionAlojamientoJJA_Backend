@@ -2,6 +2,8 @@ package com.uniquindio.alojamientosAPI.persistence.entity.accommodation;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "pictures")
@@ -14,6 +16,7 @@ public class PictureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JdbcTypeCode(SqlTypes.INTEGER)
     @Column(name = "id_int")
     private Long id;
 
@@ -22,15 +25,14 @@ public class PictureEntity {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-    
+
     @Column(name = "ismain")
-    @Builder.Default
-    private Boolean isMain = false;
+    private Boolean isMain;
 
     @Column(columnDefinition = "TEXT")
     private String url;
 
-    // Referencia por ID simple para mantener independencia del módulo
-    @Column(name = "accommodation_id", nullable = false)
-    private Long accommodationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "accommodation_id", nullable = false)
+private AccommodationEntity accommodation;
 }

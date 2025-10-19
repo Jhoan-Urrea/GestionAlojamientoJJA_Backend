@@ -1,22 +1,48 @@
 package com.uniquindio.alojamientosAPI.config;
 
+import com.uniquindio.alojamientosAPI.security.auth.CustomUserDetailsService;
+import com.uniquindio.alojamientosAPI.security.jwt.JwtAuthEntryPoint;
+import com.uniquindio.alojamientosAPI.security.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableMethodSecurity(proxyTargetClass = true)
 public class SecurityConfig {
 
-    
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthEntryPoint jwtAuthEntryPoint;
+    private final CustomUserDetailsService userDetailsService;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          JwtAuthEntryPoint jwtAuthEntryPoint,
+                          CustomUserDetailsService userDetailsService) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.jwtAuthEntryPoint = jwtAuthEntryPoint;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 
     @Bean
@@ -28,23 +54,28 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint))
             .authorizeHttpRequests(auth -> auth
-                // ✅ Endpoints públicos sin autenticación
-                .requestMatchers("/api/public/**", "/public/**").permitAll()
-
-                // ✅ Endpoints protegidos por roles
+                .requestMatchers(
+                        "/api/auth/login",
+                        "/api/auth/register",
+                        "/api/health/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/api/public/**"
+                ).permitAll()
+                // Reglas específicas para acomodaciones
+                .requestMatchers("/api/accommodations/*/activate", "/api/accommodations/*/deactivate").hasAnyRole("ANFITRION", "ADMINISTRADOR")
+                .requestMatchers("/api/accommodations/**").hasRole("ANFITRION")
                 .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
                 .requestMatchers("/api/host/**").hasRole("ANFITRION")
                 .requestMatchers("/api/client/**").hasRole("CLIENTE")
-
-                // ✅ Rutas que pueden acceder cualquiera de los tres roles
-                .requestMatchers("/api/private/**").hasAnyRole("CLIENTE", "ANFITRION", "ADMINISTRADOR")
-
-                // ✅ Cualquier otra ruta requiere autenticación
                 .anyRequest().authenticated()
             )
-            // Autenticación básica temporal
-            .httpBasic(httpBasic -> {});
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
