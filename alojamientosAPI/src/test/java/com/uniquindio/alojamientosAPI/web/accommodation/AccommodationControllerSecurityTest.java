@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = AccommodationController.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = true)
 @ActiveProfiles("test")
 @Import({SecurityConfig.class, AccommodationControllerSecurityTest.MockBeansConfig.class, AccommodationControllerSecurityTest.PassThroughJwtFilterConfig.class})
 class AccommodationControllerSecurityTest {

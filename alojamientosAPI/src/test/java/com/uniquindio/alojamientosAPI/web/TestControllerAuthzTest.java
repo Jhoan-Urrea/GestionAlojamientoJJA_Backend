@@ -150,7 +150,7 @@ class TestControllerAuthzTest {
     private CustomUserDetails buildUser(String email, RoleEnum role) {
         UserEntity ue = UserEntity.builder()
                 .email(email)
-                .password("$2a$hash")
+                .password("encoded-dummy")
                 .roles(Set.of(RoleEntity.builder().name(role).build()))
                 .build();
         return new CustomUserDetails(ue);
