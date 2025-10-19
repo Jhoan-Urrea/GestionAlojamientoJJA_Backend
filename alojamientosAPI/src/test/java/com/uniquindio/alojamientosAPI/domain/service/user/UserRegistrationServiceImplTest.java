@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,9 +39,15 @@ class UserRegistrationServiceImplTest {
                 .firstName("Juan")
                 .lastName("Pérez")
                 .email("juan@example.com")
-                .password("Abcdef1!")
+                // Genera una contraseña fuerte dinámica para evitar hardcode de secretos en el repo
+                .password(generateStrongTestPassword())
                 .phoneNumber("3001234567")
                 .build();
+    }
+
+    private String generateStrongTestPassword() {
+        // Cumple: minúscula, mayúscula, dígito y símbolo
+        return "Aa1!" + UUID.randomUUID();
     }
 
     @Test
@@ -50,7 +57,7 @@ class UserRegistrationServiceImplTest {
 
         when(userRepository.findByEmail("juan@example.com")).thenReturn(Optional.empty());
         when(roleRepository.findByName(RoleEnum.CLIENTE)).thenReturn(Optional.of(RoleEntity.builder().name(RoleEnum.CLIENTE).build()));
-        when(passwordEncoder.encode("Abcdef1!")).thenReturn("$2a$encoded");
+        when(passwordEncoder.encode(any())).thenReturn("$2a$encoded");
         when(userRepository.save(any(UserEntity.class))).thenAnswer(inv -> {
             UserEntity u = inv.getArgument(0, UserEntity.class);
             u.setId(123L);

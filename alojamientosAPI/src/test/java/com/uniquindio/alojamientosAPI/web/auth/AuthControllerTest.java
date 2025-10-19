@@ -25,6 +25,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,12 +59,16 @@ class AuthControllerTest {
     @MockBean
     com.uniquindio.alojamientosAPI.domain.service.user.UserRegistrationService userRegistrationService;
 
+    private String strongPwd() {
+        return "Aa1!" + UUID.randomUUID();
+    }
+
     @Test
     @DisplayName("Login exitoso devuelve token y datos básicos")
     void loginSuccess() throws Exception {
         UserEntity user = UserEntity.builder()
                 .email("user@example.com")
-                .password("$2a$hash")
+                .password("encoded-dummy")
                 .roles(Set.of(RoleEntity.builder().name(RoleEnum.CLIENTE).build()))
                 .build();
         CustomUserDetails cud = new CustomUserDetails(user);
@@ -72,7 +78,12 @@ class AuthControllerTest {
         Mockito.when(jwtService.generateToken(any())).thenReturn("fake.jwt.token");
         Mockito.when(jwtService.extractExpiration(eq("fake.jwt.token"))).thenReturn(java.util.Date.from(Instant.now().plusSeconds(3600)));
 
-        String body = "{\"email\":\"user@example.com\",\"password\":\"Password1!\"}";
+        String body = objectMapper.writeValueAsString(
+                Map.of(
+                        "email", "user@example.com",
+                        "password", strongPwd()
+                )
+        );
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
