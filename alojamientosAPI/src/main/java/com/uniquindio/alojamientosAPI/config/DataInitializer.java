@@ -25,14 +25,21 @@ public class DataInitializer {
 
             System.out.println("🔐 Iniciando proceso de verificación y actualización de contraseñas...");
 
-            // ⚠️ Solo leer roles existentes sin crear nuevos
-            Optional<RoleEntity> roleUserOpt = roleRepository.findByName(RoleEnum.CLIENTE);
-            Optional<RoleEntity> roleAdminOpt = roleRepository.findByName(RoleEnum.ADMINISTRADOR);
-
-            if (roleUserOpt.isEmpty() || roleAdminOpt.isEmpty()) {
-                System.out.println("⚠️ Algunos roles base no existen en la base de datos. Verifica la tabla 'roles'.");
+            // Sembrar roles base si faltan (idempotente)
+            for (RoleEnum roleEnum : new RoleEnum[]{RoleEnum.ADMINISTRADOR, RoleEnum.CLIENTE, RoleEnum.ANFITRION}) {
+                roleRepository.findByName(roleEnum).orElseGet(() -> {
+                    RoleEntity r = RoleEntity.builder()
+                            .name(roleEnum)
+                            .description("Rol base " + roleEnum.name())
+                            .build();
+                    roleRepository.save(r);
+                    System.out.println("✅ Rol creado: " + roleEnum.name());
+                    return r;
+                });
             }
 
+            Optional<RoleEntity> roleUserOpt = roleRepository.findByName(RoleEnum.CLIENTE);
+            Optional<RoleEntity> roleAdminOpt = roleRepository.findByName(RoleEnum.ADMINISTRADOR);
             RoleEntity roleUser = roleUserOpt.orElse(null);
             RoleEntity roleAdmin = roleAdminOpt.orElse(null);
 
@@ -40,8 +47,11 @@ public class DataInitializer {
             userRepository.findAll().forEach(user -> {
                 String currentPassword = user.getPassword();
 
-                // Si la contraseña parece no estar cifrada (no empieza con "$2a$" o "$2b$")
-                if (!currentPassword.startsWith("$2a$") && !currentPassword.startsWith("$2b$")) {
+                // Si la contraseña parece no estar cifrada (no empieza con "$2a$", "$2b$" o "$2y$")
+                if (currentPassword != null
+                        && !currentPassword.startsWith("$2a$")
+                        && !currentPassword.startsWith("$2b$")
+                        && !currentPassword.startsWith("$2y$")) {
                     String encodedPassword = passwordEncoder.encode(currentPassword);
                     user.setPassword(encodedPassword);
                     userRepository.save(user);
@@ -69,6 +79,16 @@ public class DataInitializer {
                 System.out.println("✅ Usuario admin creado correctamente.");
             } else {
                 System.out.println("ℹ️ El usuario admin ya existe. No se creará uno nuevo.");
+                // Si existe pero no tiene roles asignados, asignar roles base de forma segura
+                UserEntity admin = existingAdmin.get();
+                if (admin.getRoles() == null || admin.getRoles().isEmpty()) {
+                    Set<RoleEntity> rolesAdmin = new HashSet<>();
+                    if (roleAdmin != null) rolesAdmin.add(roleAdmin);
+                    if (roleUser != null) rolesAdmin.add(roleUser);
+                    admin.setRoles(rolesAdmin);
+                    userRepository.save(admin);
+                    System.out.println("✅ Roles base asignados al admin existente.");
+                }
             }
 
             System.out.println("🚀 Inicialización completada y contraseñas actualizadas correctamente.");

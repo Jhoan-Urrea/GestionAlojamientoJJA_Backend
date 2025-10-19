@@ -11,7 +11,10 @@ import org.hibernate.type.SqlTypes;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "roles")
+@Table(name = "roles",
+       uniqueConstraints = {
+           @UniqueConstraint(name = "uk_roles_name", columnNames = {"name"})
+       })
 public class RoleEntity {
 
     @Id

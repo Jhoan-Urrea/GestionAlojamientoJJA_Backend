@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = AuthController.class)
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class, JwtAuthEntryPoint.class})
+@ActiveProfiles("test")
 class AuthControllerTest {
 
     @Autowired
@@ -50,6 +52,10 @@ class AuthControllerTest {
     // Necesario por SecurityConfig
     @MockBean
     com.uniquindio.alojamientosAPI.security.auth.CustomUserDetailsService customUserDetailsService;
+
+    // Necesario por AuthController
+    @MockBean
+    com.uniquindio.alojamientosAPI.domain.service.user.UserRegistrationService userRegistrationService;
 
     @Test
     @DisplayName("Login exitoso devuelve token y datos básicos")
@@ -84,4 +90,3 @@ class AuthControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 }
-
